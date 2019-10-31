@@ -176,3 +176,6 @@ inspect its content directly.
 [metadata-docs]: https://docs.qiime2.org/2019.7/plugins/available/metadata/tabulate/
 [phylogeny-docs]: https://docs.qiime2.org/2019.7/plugins/available/phylogeny/align-to-tree-mafft-fasttree/
 [classifier-docs]: https://docs.qiime2.org/2019.7/plugins/available/feature-classifier/classify-sklearn/
+
+## Credits
+qiime2-nf was originally written by Ha Le and Jake Carlson.
