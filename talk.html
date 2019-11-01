@@ -26,34 +26,36 @@
 <body>
 <div class="reveal">
 <div class="slides">
-<section id="sec-title-slide" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom"><h1 class="title">Integration and Simplification of the QIIME2 Pipeline</h1><h2 class="author">Ha Le, Liu Lab</h2><h2 class="email"><a href="mailto:halequang314@ksu.edu">halequang314@ksu.edu</a></h2><p class="date">Created: 2019-11-01 Fri 11:29</p>
+<section id="sec-title-slide" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom"><h1 class="title">Integration and Simplification of the QIIME2 Pipeline</h1><h2 class="author">Ha Le, Liu Lab</h2><h2 class="date">11/04/2019</h2><p class="date">Created: 2019-11-01 Fri 17:10</p>
 </section>
 <p>
 
 <style>
 h1.title { font-size: 1.6em; }
-h2.author { font-size: 1em; }
-h2.email { font-size: 1em; }
+h2.author, h2.email, h2.date { font-size: 1em; }
+figcaption { font-size: 0.75em; }
 .reveal h3 { font-size: 1.2em; }
+.reveal .slides { text-align: initial; }
 p.date, span.figure-number, .section-number-3 { display: none; }
 ol.org-ol { display: inline; list-style-type: none }
+.reveal section img { border:none; box-shadow:none }
+h3#question > img { margin:0; height:48px }
+.reveal * { text-transform:none !important; }
 </style>
 
 </p>
 
 <section>
-<section id="slide-orgeae16d7" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h2 id="orgeae16d7"><span class="section-number-2">1</span> Building the pipeline with Nextflow</h2>
-<div class="outline-text-2" id="text-1">
-</div>
+<section id="slide-build-with-nextflow" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h2 id="build-with-nextflow"><span class="section-number-2">1</span> Motivation</h2>
 </section>
-<section id="slide-orgd4abb62" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h3 id="orgd4abb62"><span class="section-number-3">1.1</span> Qiime2</h3>
+<section id="slide-qiime2" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h3 id="qiime2"><span class="section-number-3">1.1</span> QIIME2</h3>
 
 <figure>
 <img src="./assets/qiime2-workflow.png" alt="qiime2-workflow.png" style="height:450px">
 
-<figcaption><span class="figure-number">Figure 1: </span>Conceptual overview of QIIME 2</figcaption>
+<figcaption><span class="figure-number">Figure 1: </span>Conceptual overview of the QIIME2 pipeline (qiime2.org)</figcaption>
 </figure>
 
 <aside class="notes">
@@ -66,104 +68,57 @@ ol.org-ol { display: inline; list-style-type: none }
 </aside>
 
 </section>
-<section id="slide-orgd4abb62-split" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<ol class="org-ol">
-<li><a id="org40a5dac"></a>Manual<br>
+<section id="slide-problems" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h3 id="problems"><span class="section-number-3">1.2</span> Problems</h3>
 <div class="org-src-container">
 
-<pre><code class="bash" >...
-qiime diversity core-metrics-phylogenetic \
+<pre><code class="bash" >qiime diversity core-metrics-phylogenetic \
   --i-phylogeny rooted-tree.qza \
   --i-table table.qza \
   --p-sampling-depth 1103 \
   --m-metadata-file sample-metadata.tsv \
   --output-dir core-metrics-results
-...
-</code></pre>
-</div>
-</li>
-
-<li><a id="orgf7f035c"></a>Nextflow<br>
-<div class="org-src-container">
-
-<pre><code class="bash" ># Centralized configs in nextflow.config
-nextflow run -resume Liulab/ubiome
 </code></pre>
 </div>
 
-<aside class="notes">
 <p>
-Long complicated commands vs single command
+User has to:
 </p>
+<ul>
+<li>Execute an individual command for each step</li>
+<li>Manually manage input/output between steps</li>
 
-</aside>
-</li>
-</ol>
+</ul>
 
 </section>
-<section id="slide-orgebfe20b" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h3 id="orgebfe20b"><span class="section-number-3">1.2</span> Configuration</h3>
-<div class="org-src-container">
+<section id="slide-nextflow-pipeline" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h3 id="nextflow-pipeline"><span class="section-number-3">1.3</span> Solution: Nextflow Pipeline</h3>
+<ul>
+<li>Publicly avaiable at <a href="https://github.com/Liulab/qiime2-nf">https://github.com/Liulab/qiime2-nf</a></li>
+<li>Jobs are started as soon as their input is available</li>
+<li>Scalable</li>
+<li>Only stop when manual input is required</li>
+<li>Optional email notification on pipeline termination</li>
 
-<pre><code class="groovy" >// Input data
-params.reads = "sample-r{1,2}.fq.gz"
-params.barcode = "barcode.txt"
-// Required qiime params
-params.truncF = 200
-params.truncR = 210
-params.samplingDepth = 5000
-// Send a notification email when the pipeline terminates
-notification.enabled = true
-notification.to = "bob@example.com"
-</code></pre>
-</div>
+</ul>
 
 </section>
 </section>
 <section>
-<section id="slide-org3cdf2bb" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h2 id="org3cdf2bb"><span class="section-number-2">2</span> Results</h2>
-<div class="outline-text-2" id="text-2">
-</div>
+<section id="slide-results" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h2 id="results"><span class="section-number-2">2</span> Results</h2>
 </section>
-<section id="slide-org6ad77a5" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h3 id="org6ad77a5"><span class="section-number-3">2.1</span> Reads Quality</h3>
+<section id="slide-taxa" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h3 id="taxa"><span class="section-number-3">2.1</span> Taxa barplots in each sample</h3>
 
 <figure>
-<img src="./assets/fwd-reads-qual.png" alt="fwd-reads-qual.png">
-
-</figure>
-
-<aside class="notes">
-<p>
-Example of where manual intervention required
-Pick truncated length based on reads quality drop-off
-Interactive plot
-</p>
-
-</aside>
-
-</section>
-<section id="slide-orge3ae288" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h3 id="orge3ae288"><span class="section-number-3">2.2</span> Reads Quality</h3>
-
-<figure>
-<img src="./assets/fwd-reads-qual-zoomed.png" alt="fwd-reads-qual-zoomed.png">
+<img src="./assets/taxa.png" alt="taxa.png">
 
 </figure>
 
 </section>
-<section id="slide-org53dd6bd" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h3 id="org53dd6bd"><span class="section-number-3">2.3</span> Bar plots of taxa in each sample</h3>
-
-<figure>
-<img src="./assets/taxa.png" alt="taxa.png" style="width:85%">
-
-</figure>
-
-</section>
-<section id="slide-org933452d" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h3 id="org933452d"><span class="section-number-3">2.4</span> Emperor plot of the PCoA matrix computed from Bray-Curtis</h3>
+<section id="slide-pcoa" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h3 id="pcoa"><span class="section-number-3">2.2</span> Emperor plot of the PCoA matrix based on Bray-Curtis dissimilarity</h3>
 <video data-autoplay loop src="./assets/bray-curtis-emperor.mp4"></video>
 
 <aside class="notes">
@@ -177,25 +132,17 @@ Only few examples, raw data and other qiime2-generated figures available
 </section>
 </section>
 <section>
-<section id="slide-org2772ca2" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h2 id="org2772ca2"><span class="section-number-2">3</span> Nextflow</h2>
-<div class="outline-text-2" id="text-3">
-</div>
+<section id="slide-nextflow" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h2 id="nextflow"><span class="section-number-2">3</span> Nextflow</h2>
 </section>
-<section id="slide-org277500c" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h3 id="org277500c"><span class="section-number-3">3.1</span> <img src="./assets/nf-logo.png" alt="nf-logo.png"></h3>
+<section id="slide-why-nextflow" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h3 id="why-nextflow"><span class="section-number-3">3.1</span> <img src="./assets/nf-logo.png" alt="nf-logo.png"></h3>
 <ul>
 <li>Sharing a pipeline is easier than ever</li>
-<li>Emphasis on reproducible analysis by supporting <code>conda</code>, <code>docker</code>, etc.</li>
-<li>Easy integration of job scheduler such as Slurm, SGE, etc.</li>
+<li>Emphasis on reproducible analysis (supports <code>conda</code>, <code>docker</code>, etc)</li>
+<li>Effortless integration into High-Performance Computing (HPC) environment (supports Slurm, SGE, etc)</li>
 
 </ul>
-
-<div class="org-src-container">
-
-<pre><code class="bash" >nextflow run Liulab/ubiome -profile slurm
-</code></pre>
-</div>
 
 <aside class="notes">
 <ul>
@@ -207,12 +154,10 @@ Only few examples, raw data and other qiime2-generated figures available
 </aside>
 
 </section>
-<section id="slide-org2d6b3b6" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h3 id="org2d6b3b6"><span class="section-number-3">3.2</span> Using Nextflow</h3>
-<div class="outline-text-3" id="text-3-2">
-</div>
+<section id="slide-using-nextflow" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h3 id="using-nextflow"><span class="section-number-3">3.2</span> Using Nextflow</h3>
 <ol class="org-ol">
-<li><a id="org7aba3c6"></a>Shared pipelines<br>
+<li><a id="orgd67dc28"></a>Shared pipelines<br>
 <ul>
 <li><a href="https://nf-co.re/pipelines">https://nf-co.re/pipelines</a></li>
 <li><a href="https://github.com/nextflow-io/awesome-nextflow">https://github.com/nextflow-io/awesome-nextflow</a></li>
@@ -220,7 +165,7 @@ Only few examples, raw data and other qiime2-generated figures available
 </ul>
 </li>
 
-<li><a id="org7b840ee"></a>Official sources<br>
+<li><a id="orga5382d9"></a>Official sources<br>
 <ul>
 <li><a href="https://github.com/nextflow-io/nextflow">https://github.com/nextflow-io/nextflow</a></li>
 <li><a href="http://docs.nextflow.io">http://docs.nextflow.io</a></li>
@@ -241,13 +186,11 @@ Only few examples, raw data and other qiime2-generated figures available
 </section>
 </section>
 <section>
-<section id="slide-org9103237" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h2 id="org9103237"><span class="section-number-2">4</span> Conclusion</h2>
-<div class="outline-text-2" id="text-4">
-</div>
+<section id="slide-conclusion" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h2 id="conclusion"><span class="section-number-2">4</span> Conclusion</h2>
 </section>
-<section id="slide-org8fcca02" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h3 id="org8fcca02"><span class="section-number-3">4.1</span> Acknowledgement</h3>
+<section id="slide-acknowledgement" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h3 id="acknowledgement"><span class="section-number-3">4.1</span> Acknowledgement</h3>
 
 <figure>
 <img src="./assets/nsf-logo.png" alt="nsf-logo.png">
@@ -257,19 +200,21 @@ Only few examples, raw data and other qiime2-generated figures available
 <ul>
 <li>Dr. Ari Jumpponen - KSU</li>
 <li>Dr. Sanzhen Liu - KSU</li>
+<li>Dr. Cheng He - KSU</li>
 <li>Jake Carlson - REU student</li>
 
 </ul>
 
 </section>
-<section id="slide-org11fecaa" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
-<h3 id="org11fecaa"><span class="section-number-3">4.2</span> Question?</h3>
-<div class="org-center">
+<section id="slide-question" data-background="./assets/ksu-template-bg.png" data-background-size="cover" data-background-position="bottom">
+<h3 id="question"><span class="section-number-3">4.2</span> <img src="./assets/gh.png" alt="gh.png"> Liulab/qiime2-nf</h3>
 <ul>
-<li><a href="https://github.com/Liulab/qiime2-nf">https://github.com/Liulab/qiime2-nf</a></li>
+<li>More detailed documents</li>
+<li>Anyone is welcome to contribute</li>
+<li>Contribution can be question, suggestion, bug report, etc.</li>
+<li>Questions?</li>
 
 </ul>
-</div>
 </section>
 </section>
 </div>
@@ -280,7 +225,7 @@ Only few examples, raw data and other qiime2-generated figures available
 // Full list of configuration options available here:
 // https://github.com/hakimel/reveal.js#configuration
 Reveal.initialize({
-transitionSpeed: 'fast',
+hash: true, transitionSpeed: 'fast',
 multiplex: {
     secret: '', // null if client
     id: '', // id, obtained from socket.io server
